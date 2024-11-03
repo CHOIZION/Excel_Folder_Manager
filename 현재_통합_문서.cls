@@ -2,7 +2,7 @@ VERSION 1.0 CLASS
 BEGIN
   MultiUse = -1  'True
 END
-Attribute VB_Name = "ÇöÀç_ÅëÇÕ_¹®¼­"
+Attribute VB_Name = "í˜„ì¬_í†µí•©_ë¬¸ì„œ"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
@@ -14,7 +14,7 @@ Private Sub Workbook_Open()
 End Sub
 
 Sub ListAuthorsAndWorks()
-    Application.ScreenUpdating = False  ' È­¸é ¾÷µ¥ÀÌÆ® ÀÏ½Ã ÁßÁö
+    Application.ScreenUpdating = False  ' í™”ë©´ ì—…ë°ì´íŠ¸ ì¼ì‹œ ì¤‘ì§€
 
     Dim FileSystem As Object
     Dim MainFolder As Object
@@ -29,7 +29,7 @@ Sub ListAuthorsAndWorks()
     Dim WorkName As String
     Dim CurrentAuthorName As String
     Dim CurrentAuthorRow As Long
-    Dim RowNum As Variant  ' Variant·Î º¯°æ
+    Dim RowNum As Variant  ' Variantë¡œ ë³€ê²½
     Dim Key As Variant
     Dim OtherKey As Variant
     Dim ExistingKey As Variant
@@ -43,27 +43,27 @@ Sub ListAuthorsAndWorks()
     Dim SortedRows As New Collection
     Dim MaxValue As Long
 
-    MainFolderPath = "D:\Zion Archive\¤§¤·\¸íÀÛ"  ' ¸íÀÛ Æú´õ °æ·Î ¼³Á¤
+    MainFolderPath = "ê°ì í´ë” ê²½ë¡œ ì‘ì„±í•˜ê¸°"  ' ëª…ì‘ í´ë” ê²½ë¡œ ì„¤ì •
 
-    ' °æ·Î È®ÀÎ
+    ' ê²½ë¡œ í™•ì¸
     If Not FolderExists(MainFolderPath) Then
-        MsgBox "°æ·Î¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù: " & MainFolderPath
+        MsgBox "ê²½ë¡œë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤: " & MainFolderPath
         Exit Sub
     End If
 
     Set FileSystem = CreateObject("Scripting.FileSystemObject")
     Set MainFolder = FileSystem.GetFolder(MainFolderPath)
 
-    ' *** Çì´õ Ãß°¡ ½ÃÀÛ ***
+    ' *** í—¤ë” ì¶”ê°€ ì‹œì‘ ***
     With ThisWorkbook.ActiveSheet
-        ' Çì´õ°¡ ÀÌ¹Ì ÀÖ´ÂÁö È®ÀÎ
-        If .Cells(1, 1).Value <> "ÀÛ°¡¸í" Or .Cells(1, 2).Value <> "¼öÁ¤ÀÏ" Or .Cells(1, 3).Value <> "ÀÛÇ°¸í" Then
-            ' Çì´õ ÀÛ¼º (±âÁ¸ µ¥ÀÌÅÍ¸¦ ¹Ğ¾î³»Áö ¾ÊÀ½)
-            .Cells(1, 1).Value = "ÀÛ°¡¸í"
-            .Cells(1, 2).Value = "¼öÁ¤ÀÏ"
-            .Cells(1, 3).Value = "ÀÛÇ°¸í"
+        ' í—¤ë”ê°€ ì´ë¯¸ ìˆëŠ”ì§€ í™•ì¸
+        If .Cells(1, 1).Value <> "ì‘ê°€ëª…" Or .Cells(1, 2).Value <> "ìˆ˜ì •ì¼" Or .Cells(1, 3).Value <> "ì‘í’ˆëª…" Then
+            ' í—¤ë” ì‘ì„± (ê¸°ì¡´ ë°ì´í„°ë¥¼ ë°€ì–´ë‚´ì§€ ì•ŠìŒ)
+            .Cells(1, 1).Value = "ì‘ê°€ëª…"
+            .Cells(1, 2).Value = "ìˆ˜ì •ì¼"
+            .Cells(1, 3).Value = "ì‘í’ˆëª…"
             
-            ' Çì´õ ¼­½Ä ÁöÁ¤ (¼±ÅÃ »çÇ×)
+            ' í—¤ë” ì„œì‹ ì§€ì • (ì„ íƒ ì‚¬í•­)
             With .Range("A1:C1")
                 .Font.Bold = True
                 .Interior.Color = RGB(200, 200, 200)
@@ -71,18 +71,18 @@ Sub ListAuthorsAndWorks()
             End With
         End If
     End With
-    ' *** Çì´õ Ãß°¡ ³¡ ***
+    ' *** í—¤ë” ì¶”ê°€ ë ***
 
-    ' ±âÁ¸ µ¥ÀÌÅÍ ½ÃÆ®¿¡¼­ ±âÁ¸ ¸ñ·Ï È®ÀÎ
+    ' ê¸°ì¡´ ë°ì´í„° ì‹œíŠ¸ì—ì„œ ê¸°ì¡´ ëª©ë¡ í™•ì¸
     Set ExistingAuthors = CreateObject("Scripting.Dictionary")
     Set ExistingWorks = CreateObject("Scripting.Dictionary")
 
-    ' ±×·ìÈ­ ÇØÁ¦ (³ªÁß¿¡ ´Ù½Ã Àû¿ë)
+    ' ê·¸ë£¹í™” í•´ì œ (ë‚˜ì¤‘ì— ë‹¤ì‹œ ì ìš©)
     Cells.EntireRow.ClearOutline
 
-    ' ±âÁ¸ ¸ñ·ÏÀ» µñ¼Å³Ê¸®¿¡ Ãß°¡ÇÏ¿© ÃßÀû
-    ' µñ¼Å³Ê¸®ÀÇ Å°: AuthorName ¶Ç´Â AuthorName & "\" & WorkName
-    ' °ª: Çà ¹øÈ£
+    ' ê¸°ì¡´ ëª©ë¡ì„ ë”•ì…”ë„ˆë¦¬ì— ì¶”ê°€í•˜ì—¬ ì¶”ì 
+    ' ë”•ì…”ë„ˆë¦¬ì˜ í‚¤: AuthorName ë˜ëŠ” AuthorName & "\" & WorkName
+    ' ê°’: í–‰ ë²ˆí˜¸
     CurrentAuthorName = ""
     For i = 2 To Cells(Rows.Count, 1).End(xlUp).Row
         If Cells(i, 1).Value <> "" Then
@@ -95,11 +95,11 @@ Sub ListAuthorsAndWorks()
         End If
     Next i
 
-    ' ÇöÀç Æú´õ ±¸Á¶¿¡¼­ ¸ñ·Ï °¡Á®¿À±â
+    ' í˜„ì¬ í´ë” êµ¬ì¡°ì—ì„œ ëª©ë¡ ê°€ì ¸ì˜¤ê¸°
     Set CurrentAuthors = CreateObject("Scripting.Dictionary")
     Set CurrentWorks = CreateObject("Scripting.Dictionary")
 
-    ' ÇöÀç Æú´õ ±¸Á¶¸¦ µñ¼Å³Ê¸®¿¡ ÀúÀå
+    ' í˜„ì¬ í´ë” êµ¬ì¡°ë¥¼ ë”•ì…”ë„ˆë¦¬ì— ì €ì¥
     For Each AuthorFolder In MainFolder.SubFolders
         AuthorName = AuthorFolder.Name
         CurrentAuthors(AuthorName) = True
@@ -109,25 +109,25 @@ Sub ListAuthorsAndWorks()
         Next WorkFolder
     Next AuthorFolder
 
-    ' »èÁ¦µÈ ÀÛÇ° Ã£±â
+    ' ì‚­ì œëœ ì‘í’ˆ ì°¾ê¸°
     Dim RowsToDelete As New Collection
     For Each Key In ExistingWorks.Keys
         If Not CurrentWorks.Exists(Key) Then
-            ' »èÁ¦µÈ ÀÛÇ°ÀÇ Çà ¹øÈ£ °¡Á®¿À±â
+            ' ì‚­ì œëœ ì‘í’ˆì˜ í–‰ ë²ˆí˜¸ ê°€ì ¸ì˜¤ê¸°
             RowNum = ExistingWorks(Key)
             RowsToDelete.Add RowNum
         End If
     Next Key
 
-    ' »èÁ¦µÈ ÀÛ°¡ Ã£±â (ÀÛÇ°º¸´Ù ¸ÕÀú »èÁ¦ÇØ¾ß ÇÔ)
+    ' ì‚­ì œëœ ì‘ê°€ ì°¾ê¸° (ì‘í’ˆë³´ë‹¤ ë¨¼ì € ì‚­ì œí•´ì•¼ í•¨)
     For Each Key In ExistingAuthors.Keys
         If Not CurrentAuthors.Exists(Key) Then
-            ' »èÁ¦µÈ ÀÛ°¡ÀÇ Çà ¹øÈ£ °¡Á®¿À±â
+            ' ì‚­ì œëœ ì‘ê°€ì˜ í–‰ ë²ˆí˜¸ ê°€ì ¸ì˜¤ê¸°
             RowNum = ExistingAuthors(Key)
-            ' ÀÛ°¡¿Í ±× ¾Æ·¡ÀÇ ÀÛÇ° ÇàÀ» ¸ğµÎ »èÁ¦ÇØ¾ß ÇÔ
+            ' ì‘ê°€ì™€ ê·¸ ì•„ë˜ì˜ ì‘í’ˆ í–‰ì„ ëª¨ë‘ ì‚­ì œí•´ì•¼ í•¨
             StartRow = RowNum
 
-            ' ´ÙÀ½ ÀÛ°¡ÀÇ Çà ¹øÈ£ Ã£±â
+            ' ë‹¤ìŒ ì‘ê°€ì˜ í–‰ ë²ˆí˜¸ ì°¾ê¸°
             EndRow = Cells(Rows.Count, 1).End(xlUp).Row
             For Each OtherKey In ExistingAuthors.Keys
                 If ExistingAuthors(OtherKey) > StartRow Then
@@ -137,14 +137,14 @@ Sub ListAuthorsAndWorks()
                 End If
             Next OtherKey
 
-            ' »èÁ¦ÇÒ Çà ¹øÈ£¸¦ ¸ğµÎ Ãß°¡
+            ' ì‚­ì œí•  í–‰ ë²ˆí˜¸ë¥¼ ëª¨ë‘ ì¶”ê°€
             For i = StartRow To EndRow
                 RowsToDelete.Add i
             Next i
         End If
     Next Key
 
-    ' Áßº¹ Á¦°Å ¹× ³»¸²Â÷¼ø Á¤·Ä ÈÄ Çà »èÁ¦
+    ' ì¤‘ë³µ ì œê±° ë° ë‚´ë¦¼ì°¨ìˆœ ì •ë ¬ í›„ í–‰ ì‚­ì œ
     Dim RowExistsFlag As Boolean
     For i = 1 To RowsToDelete.Count
         RowExistsFlag = False
@@ -159,7 +159,7 @@ Sub ListAuthorsAndWorks()
         End If
     Next i
 
-    ' ³»¸²Â÷¼ø Á¤·Ä
+    ' ë‚´ë¦¼ì°¨ìˆœ ì •ë ¬
     While UniqueRows.Count > 0
         MaxValue = 0
         For Each RowItem In UniqueRows
@@ -177,12 +177,12 @@ Sub ListAuthorsAndWorks()
         Next i
     Wend
 
-    ' Çà »èÁ¦
+    ' í–‰ ì‚­ì œ
     For Each RowNum In SortedRows
         Rows(RowNum).Delete
     Next RowNum
 
-    ' Çà »èÁ¦ ÈÄ ExistingAuthors¿Í ExistingWorksÀÇ Çà ¹øÈ£ ¾÷µ¥ÀÌÆ®
+    ' í–‰ ì‚­ì œ í›„ ExistingAuthorsì™€ ExistingWorksì˜ í–‰ ë²ˆí˜¸ ì—…ë°ì´íŠ¸
     For Each DeletedRow In SortedRows
         For Each Key In ExistingAuthors.Keys
             If ExistingAuthors(Key) > DeletedRow Then
@@ -196,15 +196,15 @@ Sub ListAuthorsAndWorks()
         Next Key
     Next DeletedRow
 
-    ' Ãß°¡µÈ ÀÛ°¡ ¹× ÀÛÇ° Ãß°¡
-    ' ÀÛ°¡ Ãß°¡
+    ' ì¶”ê°€ëœ ì‘ê°€ ë° ì‘í’ˆ ì¶”ê°€
+    ' ì‘ê°€ ì¶”ê°€
     For Each Key In CurrentAuthors.Keys
         If Not ExistingAuthors.Exists(Key) Then
-            ' ¸¶Áö¸· Çà¿¡ Ãß°¡
+            ' ë§ˆì§€ë§‰ í–‰ì— ì¶”ê°€
             LastRow = Cells(Rows.Count, 1).End(xlUp).Row + 1
             Cells(LastRow, 1).Value = Key
             Cells(LastRow, 2).Value = Format(FileSystem.GetFolder(MainFolderPath & "\" & Key).DateLastModified, "yyyy-mm-dd hh:mm:ss")
-            ' ¼­½Ä Àû¿ë
+            ' ì„œì‹ ì ìš©
             Cells(LastRow, 1).Font.Bold = True
             Cells(LastRow, 1).Interior.Color = RGB(220, 240, 255)
             Cells(LastRow, 1).HorizontalAlignment = xlCenter
@@ -213,30 +213,30 @@ Sub ListAuthorsAndWorks()
         End If
     Next Key
 
-    ' ÀÛÇ° Ãß°¡
+    ' ì‘í’ˆ ì¶”ê°€
     For Each Key In CurrentWorks.Keys
         If Not ExistingWorks.Exists(Key) Then
-            ' Key Çü½ÄÀº "AuthorName\WorkName"
+            ' Key í˜•ì‹ì€ "AuthorName\WorkName"
             AuthorName = Split(Key, "\")(0)
             WorkName = Split(Key, "\")(1)
-            ' ÀÛ°¡ÀÇ Çà ¹øÈ£ Ã£±â
+            ' ì‘ê°€ì˜ í–‰ ë²ˆí˜¸ ì°¾ê¸°
             If ExistingAuthors.Exists(AuthorName) Then
                 RowNum = ExistingAuthors(AuthorName)
-                ' ÀÛÇ°À» ÀÛ°¡ ¾Æ·¡¿¡ Ãß°¡
+                ' ì‘í’ˆì„ ì‘ê°€ ì•„ë˜ì— ì¶”ê°€
                 Dim InsertRow As Long
                 InsertRow = RowNum + 1
-                ' ±âÁ¸ ÀÛÇ° ¼ö¸¸Å­ Çà ¹øÈ£ Áõ°¡
+                ' ê¸°ì¡´ ì‘í’ˆ ìˆ˜ë§Œí¼ í–‰ ë²ˆí˜¸ ì¦ê°€
                 Do While Cells(InsertRow, 3).Value <> ""
                     InsertRow = InsertRow + 1
                 Loop
-                ' Çà »ğÀÔ
+                ' í–‰ ì‚½ì…
                 Rows(InsertRow).Insert Shift:=xlDown
                 Cells(InsertRow, 3).Value = WorkName
                 Cells(InsertRow, 3).Interior.Color = RGB(245, 245, 245)
                 Cells(InsertRow, 3).Font.Italic = True
                 Cells(InsertRow, 3).HorizontalAlignment = xlLeft
                 ExistingWorks(Key) = InsertRow
-                ' Çà »ğÀÔ ÈÄ ExistingAuthors¿Í ExistingWorksÀÇ Çà ¹øÈ£ ¾÷µ¥ÀÌÆ®
+                ' í–‰ ì‚½ì… í›„ ExistingAuthorsì™€ ExistingWorksì˜ í–‰ ë²ˆí˜¸ ì—…ë°ì´íŠ¸
                 For Each ExistingKey In ExistingAuthors.Keys
                     If ExistingAuthors(ExistingKey) >= InsertRow And ExistingKey <> AuthorName Then
                         ExistingAuthors(ExistingKey) = ExistingAuthors(ExistingKey) + 1
@@ -251,16 +251,16 @@ Sub ListAuthorsAndWorks()
         End If
     Next Key
 
-    ' ±×·ìÈ­ Àû¿ë
-    ' ¸ğµç ÀÛ°¡¿¡ ´ëÇØ ±×·ìÈ­
+    ' ê·¸ë£¹í™” ì ìš©
+    ' ëª¨ë“  ì‘ê°€ì— ëŒ€í•´ ê·¸ë£¹í™”
     For Each Key In ExistingAuthors.Keys
         RowNum = ExistingAuthors(Key)
-        ' ÀÛÇ°ÀÇ ³¡ Çà ¹øÈ£ Ã£±â
+        ' ì‘í’ˆì˜ ë í–‰ ë²ˆí˜¸ ì°¾ê¸°
         StartRow = RowNum + 1
         EndRow = StartRow
         Do While Cells(EndRow, 3).Value <> ""
             EndRow = EndRow + 1
-            If EndRow > Rows.Count Then Exit Do  ' ¾ÈÀüÀåÄ¡
+            If EndRow > Rows.Count Then Exit Do  ' ì•ˆì „ì¥ì¹˜
         Loop
         EndRow = EndRow - 1
         If EndRow >= StartRow Then
@@ -268,17 +268,17 @@ Sub ListAuthorsAndWorks()
         End If
     Next Key
 
-    ' ±×·ìÈ­ ±âº» ¼³Á¤: Ãà¼ÒµÈ »óÅÂ·Î Ç¥½Ã
+    ' ê·¸ë£¹í™” ê¸°ë³¸ ì„¤ì •: ì¶•ì†Œëœ ìƒíƒœë¡œ í‘œì‹œ
     ActiveSheet.Outline.ShowLevels RowLevels:=1
 
-    ' ¿­ ³Êºñ ÀÚµ¿ Á¶Á¤ ¹× ¼öÁ¤ÀÏ ¿­ ³Êºñ ÃÖÀûÈ­
+    ' ì—´ ë„ˆë¹„ ìë™ ì¡°ì • ë° ìˆ˜ì •ì¼ ì—´ ë„ˆë¹„ ìµœì í™”
     Columns("A").AutoFit
     Columns("B").ColumnWidth = 20
     Columns("C").ColumnWidth = 120
 
-    Application.ScreenUpdating = True  ' È­¸é ¾÷µ¥ÀÌÆ® Àç°³
+    Application.ScreenUpdating = True  ' í™”ë©´ ì—…ë°ì´íŠ¸ ì¬ê°œ
 
-    MsgBox "Æú´õ ±¸Á¶ÀÇ º¯°æ »çÇ×ÀÌ ¾÷µ¥ÀÌÆ®µÇ¾ú½À´Ï´Ù."
+    MsgBox "í´ë” êµ¬ì¡°ì˜ ë³€ê²½ ì‚¬í•­ì´ ì—…ë°ì´íŠ¸ë˜ì—ˆìŠµë‹ˆë‹¤."
 End Sub
 
 Function FolderExists(FolderPath As String) As Boolean
